@@ -1,0 +1,41 @@
+<project name="AntDocGen" default="generateDocumentation" basedir=".">
+	
+	<!-- Setup path properties -->
+	<!-- Download xalan from https://xalan.apache.org/xalan-j/downloads.html -->
+	<property name="PATH_TO_XALAN" value="C:\example\xalan.jar" />
+	<!-- Download xsl from http://ant2dot.sourceforge.net/ -->
+	<property name="PATH_TO_XSL" value="C:\example\ant2dot.xsl" />
+	<!-- Download graphviz from http://www.graphviz.org/Download_windows.php -->
+	<property name="PATH_TO_GRAPHVIZ" value="C:\example\graphviz\release\bin\dot.exe" />
+	
+	<!-- Main build script -->
+	<target name="generateDocumentation">
+		
+		<!-- Generate the dot files for each xml file in this directory -->
+		<apply executable="java" parallel="false">
+			<arg value="-cp" />
+			<arg value="${PATH_TO_XALAN}" />
+			<arg value="org.apache.xalan.xslt.Process" />
+			<arg value="-IN" />
+			<srcfile/>
+			<arg value="-XSL" />
+			<arg value="${PATH_TO_XSL}" />
+			<arg value="-OUT" />
+			<targetfile/>
+			<fileset dir="${basedir}" includes="**/*.xml"/>
+			<mapper type="glob" from="*.xml" to="*.dot"/>
+		</apply>
+		
+		<!-- Generate the png files for each dot file in this directory -->
+		<apply executable="${PATH_TO_GRAPHVIZ}">
+			<arg value="-Tpng" />
+			<srcfile/>
+			<arg value="-o" />
+			<targetfile/>
+			<fileset dir="${basedir}" includes="**/*.dot"/>
+			<mapper type="glob" from="*.dot" to="*.png"/>
+		</apply>
+		
+	</target>
+	
+</project>
